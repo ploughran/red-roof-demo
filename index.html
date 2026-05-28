@@ -869,10 +869,113 @@ body {
 /* ══════════════════════════════
    RESPONSIVE
 ══════════════════════════════ */
-@media (max-width: 800px) {
+/* ── Tablet (≤900px) ─────────────────────────────── */
+@media (max-width: 900px) {
+  .slide-inner  { padding: 60px 24px 32px; }
+  .nav-hint     { display: none; }
+  .nav-bar      { gap: 8px; padding: 0 14px; }
+
   .scene-layout { grid-template-columns: 1fr; }
-  .title-scenes { grid-template-columns: repeat(3,1fr); }
-  .persona-grid { grid-template-columns: repeat(2,1fr); }
+  .title-scenes { grid-template-columns: repeat(3, 1fr); }
+  .persona-grid { grid-template-columns: repeat(2, 1fr); }
+  .platform-grid { grid-template-columns: repeat(2, 1fr); }
+  .close-grid   { grid-template-columns: repeat(2, 1fr); }
+  .dash-grid    { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Mobile (≤600px) ─────────────────────────────── */
+@media (max-width: 600px) {
+
+  /* ── SCROLLING ───────────────────────────────────── */
+  body      { overflow-x: hidden; overflow-y: auto; }
+  #carousel { overflow-x: hidden; overflow-y: visible; position: relative; height: auto; }
+  .slide    { position: relative; transform: none !important; transition: none;
+              visibility: visible; pointer-events: auto; display: none; width: 100%; }
+  .slide.active { display: flex; }
+  .slide.prev   { display: none; }
+  .slide-inner  { overflow: visible; height: auto; flex: none; padding: 58px 14px 28px; }
+  .slide-scene .slide-inner,
+  .slide-dense .slide-inner { justify-content: flex-start; overflow: visible; height: auto; }
+
+  /* ── NAV ─────────────────────────────────────────── */
+  .nav-brand   { font-size: 12px; }
+  .nav-label   { display: none; }
+  .nav-dot     { width: 6px; height: 6px; }
+  .nav-counter { font-size: 11px; }
+  .nav-hint    { display: none; }
+
+  /* ── TYPOGRAPHY ──────────────────────────────────── */
+  .slide-h1  { font-size: clamp(20px, 5vw, 28px) !important; }
+  .eyebrow   { font-size: 10px; }
+  .slide-desc { font-size: 12px; }
+
+  /* ── TITLE SLIDE ─────────────────────────────────── */
+  .title-scenes { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .scene-pill   { font-size: 10px; padding: 8px 10px; }
+
+  /* ── PERSONAS SLIDE ──────────────────────────────── */
+  .persona-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .persona-card { padding: 14px 12px; }
+
+  /* ── SCENE LAYOUTS — all slides ─────────────────── */
+  .scene-layout { grid-template-columns: 1fr; gap: 16px; margin-top: 10px; }
+  .scene-left, .scene-right { overflow: visible; min-height: 0; }
+
+  /* ── MOCK WINDOW (pre-visit, leadership, franchise dev) */
+  .mock-window  { border-radius: 10px; }
+  .mock-topbar  { padding: 8px 12px; }
+  .mock-body    { overflow: visible; max-height: none; padding: 10px 12px; }
+
+  /* ── CHAT WINDOW (s4 franchisee portal) ─────────────
+     Fixed height with flex chain so input bar stays visible */
+  .chat-window  { flex: none; height: 400px; display: flex; flex-direction: column; }
+  .chat-body    { flex: 1; min-height: 0; overflow-y: auto; height: auto; }
+  .chat-chips   { flex-shrink: 0; }
+  .chat-input-bar { flex-shrink: 0; }
+
+  /* ── AI BLOCK ────────────────────────────────────── */
+  .ai-block { margin-top: 8px; }
+
+  /* ── STORY BEAT ──────────────────────────────────── */
+  .story-beat { padding: 10px 12px; }
+  .story-beat-text { font-size: 12px; }
+
+  /* ── VALUE CARDS / BENEFIT ROWS ─────────────────── */
+  .value-card { padding: 0; }
+  .benefit-row { flex-wrap: wrap; gap: 6px; }
+  .benefit-persona { min-width: 90px; }
+
+  /* ── STEPS LIST ──────────────────────────────────── */
+  .step-item { gap: 8px; }
+  .step-text { font-size: 11px; }
+
+  /* ── PLATFORM GRID (s7) ──────────────────────────── */
+  .platform-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .platform-card { padding: 8px 10px; }
+
+  /* ── CLOSE / STATS GRIDS ─────────────────────────── */
+  .close-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .close-card { padding: 12px; }
+
+  /* ── DASHBOARD (s5 leadership) ───────────────────── */
+  .dash-grid  { grid-template-columns: 1fr; gap: 8px; }
+  .kpi-row    { flex-wrap: wrap; }
+
+  /* ── VALUE TABLE (s8 before/after) ──────────────── */
+  .value-table { font-size: 11px; }
+  .value-table th, .value-table td { padding: 7px 8px; font-size: 10.5px; }
+
+  /* ── FEATURE CHIPS / PERSONA CHIPS ──────────────── */
+  .feature-chips  { gap: 5px; flex-wrap: wrap; }
+  .feature-chip   { font-size: 10px; padding: 3px 8px; }
+  .persona-chip   { padding: 3px 8px 3px 3px; }
+  .persona-chip-avatar { width: 22px; height: 22px; }
+  .persona-chip svg    { width: 22px; height: 22px; }
+
+  /* ── SCENE HEADER ────────────────────────────────── */
+  .scene-header   { gap: 8px; }
+  .scene-title    { font-size: 16px; }
+  .scene-persona-row { flex-wrap: wrap; gap: 6px; }
 }
 </style>
 </head>
