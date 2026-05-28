@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Red Roof Inn × Salesforce — Demo Storyboard</title>
+<style>
+/* ── Tokens ── */
+:root {
+  --red:        #c8102e;
+  --red-dark:   #9a0c22;
+  --red-light:  #e8435a;
+  --navy:       #1a2a3a;
+  --navy-light: #243649;
+  --gold:       #f5a623;
+  --gold-light: #ffc55e;
+  --blue:       #0070d2;
+  --sf-navy:    #032D60;
+  --green:      #2ecc71;
+  --white:      #ffffff;
+  --bg:         #0d1117;
+  --surf:       #161b22;
+  --surf2:      #21262d;
+  --border:     #30363d;
+  --text:       #e6edf3;
+  --muted:      #8b949e;
+  --af-blue:    #032D60;
+  --ec-purple:  #5b4fcf;
+  --mc-yellow:  #ffb600;
+  --dc-teal:    #00aac8;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* ── CAROUSEL ── */
+#carousel {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateX(100%);
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  visibility: hidden;
+  pointer-events: none;
+}
+.slide.active  { transform: translateX(0);     visibility: visible; pointer-events: auto; }
+.slide.prev    { transform: translateX(-100%); }
+
+.slide-inner {
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 70px 48px 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Scene slides: top-anchored, full-height flex */
+.slide-scene .slide-inner {
+  justify-content: flex-start;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* ── NAV BAR ── */
+.nav-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  background: rgba(26,10,10,0.97);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(200,16,46,0.35);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 50px;
+  gap: 12px;
+}
+.nav-brand {
+  font-size: 13px; font-weight: 800;
+  color: var(--white); white-space: nowrap; letter-spacing: -0.3px;
+}
+.nav-brand span { color: var(--red-light); }
+.nav-sep { width: 1px; height: 20px; background: rgba(255,255,255,0.12); }
+.nav-arrow {
+  background: none; border: 1px solid rgba(255,255,255,0.18);
+  color: var(--text); border-radius: 6px;
+  width: 30px; height: 30px; font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all 0.15s;
+}
+.nav-arrow:hover { background: rgba(200,16,46,0.25); border-color: var(--red-light); }
+.nav-arrow:disabled { opacity: 0.25; cursor: default; }
+.nav-dots { display: flex; gap: 6px; align-items: center; }
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer; transition: all 0.2s;
+}
+.nav-dot.active { background: var(--red); transform: scale(1.4); }
+.nav-dot:hover  { background: rgba(200,16,46,0.6); }
+.nav-label {
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.5); white-space: nowrap;
+}
+.nav-counter {
+  font-size: 11px; font-weight: 700; color: var(--red-light);
+  background: rgba(200,16,46,0.18); border-radius: 10px;
+  padding: 2px 8px;
+}
+.nav-hint { font-size: 10px; color: rgba(255,255,255,0.28); margin-left: auto; }
+.nav-hint kbd {
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 3px; padding: 1px 5px; font-size: 9px; font-family: inherit;
+}
+
+/* ── TYPOGRAPHY ── */
+.eyebrow {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--red-light); margin-bottom: 10px;
+}
+.slide-h1 {
+  font-size: clamp(28px, 3.6vw, 52px);
+  font-weight: 900; line-height: 1.1;
+  letter-spacing: -1px; margin-bottom: 14px;
+}
+.slide-desc {
+  font-size: 15px; color: var(--muted);
+  line-height: 1.65; max-width: 680px;
+}
+
+/* ══════════════════════════════
+   SLIDE 1 — TITLE
+══════════════════════════════ */
+.slide-title { background: var(--bg); }
+.slide-title .slide-inner { justify-content: center; }
+
+.title-overline {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(200,16,46,0.15); border: 1.5px solid rgba(200,16,46,0.4);
+  border-radius: 24px; padding: 7px 18px;
+  font-size: 12px; font-weight: 700; color: var(--red-light);
+  text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 28px;
+}
+
+.title-main {
+  font-size: clamp(38px, 5vw, 72px);
+  font-weight: 900; line-height: 1.05;
+  letter-spacing: -2px; margin-bottom: 8px;
+}
+.title-main .red  { color: var(--red-light); }
+.title-main .thin { font-weight: 300; }
+
+.title-sub {
+  font-size: 18px; color: var(--muted);
+  font-weight: 400; margin-bottom: 40px;
+  max-width: 600px;
+}
+
+.title-products {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 48px;
+}
+.product-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+  border: 1.5px solid; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.pb-sales  { color: #7dd3fc; border-color: rgba(125,211,252,0.35); background: rgba(125,211,252,0.08); }
+.pb-exp    { color: #c4b5fd; border-color: rgba(196,181,253,0.35); background: rgba(196,181,253,0.08); }
+.pb-mktg   { color: #fcd34d; border-color: rgba(252,211,77,0.35);  background: rgba(252,211,77,0.08); }
+.pb-af     { color: #93c5fd; border-color: rgba(147,197,253,0.35); background: rgba(147,197,253,0.08); }
+.pb-dc     { color: #5eead4; border-color: rgba(94,234,212,0.35);  background: rgba(94,234,212,0.08); }
+
+.title-scenes {
+  display: grid; grid-template-columns: repeat(6,1fr); gap: 10px;
+  max-width: 820px;
+}
+.scene-pill {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px;
+  font-size: 10px; color: var(--muted); text-align: center;
+  line-height: 1.45;
+}
+.scene-pill .sp-num {
+  display: block; font-size: 13px; font-weight: 800;
+  color: var(--red-light); margin-bottom: 4px;
+}
+
+/* ══════════════════════════════
+   SCENE SLIDES
+══════════════════════════════ */
+.slide-scene { background: var(--bg); }
+
+/* Two-column scene layout */
+.scene-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+  margin-top: 14px;
+}
+
+.scene-left {
+  display: flex; flex-direction: column; min-height: 0;
+}
+
+.scene-right {
+  display: flex; flex-direction: column; gap: 16px;
+  overflow-y: auto; min-height: 0;
+}
+
+/* Scene header */
+.scene-header { margin-bottom: 14px; flex-shrink: 0; }
+.scene-num-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(200,16,46,0.15); border: 1.5px solid rgba(200,16,46,0.4);
+  border-radius: 6px; padding: 3px 10px;
+  font-size: 10px; font-weight: 800; color: var(--red-light);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.scene-title {
+  font-size: clamp(20px, 2.4vw, 30px);
+  font-weight: 900; color: var(--text); line-height: 1.15;
+  margin-bottom: 4px;
+}
+.scene-persona-row {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
+}
+.persona-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 16px; padding: 3px 10px;
+  font-size: 10.5px; color: var(--muted);
+}
+.persona-chip .pc-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--red);
+}
+.feature-chips {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
+}
+.feature-chip {
+  font-size: 9.5px; font-weight: 700; padding: 2px 8px;
+  border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+  border: 1px solid;
+}
+.fc-sales { color: #7dd3fc; border-color: rgba(125,211,252,0.4); background: rgba(125,211,252,0.08); }
+.fc-exp   { color: #c4b5fd; border-color: rgba(196,181,253,0.4); background: rgba(196,181,253,0.08); }
+.fc-mktg  { color: #fcd34d; border-color: rgba(252,211,77,0.4);  background: rgba(252,211,77,0.08); }
+.fc-af    { color: #93c5fd; border-color: rgba(147,197,253,0.4); background: rgba(147,197,253,0.08); }
+.fc-dc    { color: #5eead4; border-color: rgba(94,234,212,0.4);  background: rgba(94,234,212,0.08); }
+.fc-mob   { color: #fb923c; border-color: rgba(251,146,60,0.4);  background: rgba(251,146,60,0.08); }
+
+/* Mock screen area */
+.mock-window {
+  flex: 1;
+  min-height: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surf);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+.mock-topbar {
+  background: var(--surf2);
+  border-bottom: 1px solid var(--border);
+  padding: 9px 14px;
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
+.mock-dots { display: flex; gap: 5px; }
+.mock-dot  { width: 10px; height: 10px; border-radius: 50%; }
+.mock-dot.r { background: #ff5f57; }
+.mock-dot.y { background: #febc2e; }
+.mock-dot.g { background: #28c840; }
+.mock-topbar-title {
+  flex: 1; text-align: center;
+  font-size: 11px; color: var(--muted); font-weight: 500;
+}
+.mock-body {
+  flex: 1; min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  scroll-behavior: smooth;
+}
+
+/* Salesforce-style record header */
+.sf-record-header {
+  background: var(--navy); border-radius: 8px;
+  padding: 12px 14px; border: 1px solid rgba(255,255,255,0.08);
+}
+.sf-record-type {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--muted); margin-bottom: 4px;
+}
+.sf-record-name {
+  font-size: 16px; font-weight: 800; color: var(--white); margin-bottom: 6px;
+}
+.sf-record-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.sf-pill {
+  font-size: 10px; padding: 2px 8px; border-radius: 10px;
+  background: rgba(255,255,255,0.08); color: var(--muted); border: 1px solid var(--border);
+}
+.sf-pill.red   { background: rgba(200,16,46,0.18); color: #f87171; border-color: rgba(200,16,46,0.35); }
+.sf-pill.green { background: rgba(46,204,113,0.15); color: #6ee7b7; border-color: rgba(46,204,113,0.3); }
+.sf-pill.amber { background: rgba(245,166,35,0.15); color: #fcd34d; border-color: rgba(245,166,35,0.3); }
+
+/* Metric grid */
+.metric-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.metric-card {
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+}
+.metric-label {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--muted); margin-bottom: 4px;
+}
+.metric-value {
+  font-size: 22px; font-weight: 800; color: var(--white);
+}
+.metric-sub {
+  font-size: 10px; color: var(--muted); margin-top: 2px;
+}
+.metric-up   { color: #6ee7b7; }
+.metric-down { color: #f87171; }
+.metric-warn { color: #fcd34d; }
+
+/* AI response block */
+.ai-block {
+  background: rgba(200,16,46,0.08); border: 1px solid rgba(200,16,46,0.25);
+  border-radius: 10px; padding: 12px 14px;
+}
+.ai-block-header {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 700; color: var(--red-light);
+  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+}
+.ai-block-header .ai-icon {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--red); display: flex; align-items: center;
+  justify-content: center; font-size: 10px; color: #fff;
+}
+.ai-body {
+  font-size: 12px; color: var(--text); line-height: 1.6;
+}
+.ai-bullets { list-style: none; margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+.ai-bullets li {
+  display: flex; gap: 7px; align-items: flex-start;
+  font-size: 11.5px; color: var(--muted); line-height: 1.45;
+}
+.ai-bullets li::before {
+  content: '→'; color: var(--red-light); font-weight: 700;
+  flex-shrink: 0; margin-top: 1px;
+}
+
+/* Chat interface (for Agentforce/portal scenes) */
+.chat-window {
+  flex: 1; min-height: 0;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surf);
+  display: flex; flex-direction: column;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+}
+.chat-topbar {
+  background: var(--sf-navy);
+  padding: 11px 16px;
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.chat-topbar-avatar {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--red); display: flex; align-items: center;
+  justify-content: center; font-size: 12px; font-weight: 800; color: #fff;
+}
+.chat-topbar-name { color: #fff; font-size: 13px; font-weight: 700; }
+.chat-topbar-sub  { color: rgba(255,255,255,0.6); font-size: 10.5px; }
+.chat-topbar-dot  { width: 8px; height: 8px; border-radius: 50%; background: #34a853; margin-left: auto; }
+.chat-body {
+  flex: 1; min-height: 0;
+  padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  overflow-y: auto; scroll-behavior: smooth;
+  background: var(--bg);
+}
+.chat-msg-bot {
+  display: flex; gap: 8px; align-items: flex-start;
+}
+.chat-avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--sf-navy);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; color: #7dd3fc;
+  flex-shrink: 0; margin-top: 1px;
+  border: 1px solid rgba(125,211,252,0.3);
+}
+.chat-bubble-bot {
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 14px 14px 14px 3px;
+  padding: 9px 13px; font-size: 12px; color: var(--text);
+  max-width: 86%; line-height: 1.5;
+}
+.chat-msg-user { display: flex; justify-content: flex-end; }
+.chat-bubble-user {
+  background: var(--red); border-radius: 14px 14px 3px 14px;
+  padding: 9px 13px; font-size: 12px; color: #fff;
+  max-width: 78%; line-height: 1.5;
+}
+.chat-tool-call {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(0,112,210,0.12); border: 1px solid rgba(0,112,210,0.3);
+  border-radius: 8px; padding: 5px 10px;
+  font-size: 11px; color: #93c5fd; margin-left: 34px;
+}
+.chat-tool-name { font-weight: 700; font-family: monospace; }
+.chat-tool-result { color: var(--muted); font-family: monospace; font-size: 10.5px; }
+.chat-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 2px 0 2px 34px;
+}
+.chat-chip {
+  border: 1px solid rgba(200,16,46,0.4); color: var(--red-light);
+  border-radius: 16px; padding: 5px 12px;
+  font-size: 11.5px; font-weight: 500;
+  background: rgba(200,16,46,0.08); cursor: pointer;
+  transition: all 0.15s;
+}
+.chat-chip:hover { background: rgba(200,16,46,0.2); }
+.chat-input-bar {
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surf); flex-shrink: 0;
+}
+.chat-input-field {
+  flex: 1; background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 7px 14px;
+  font-size: 12px; color: var(--text); outline: none; font-family: inherit;
+}
+.chat-input-field::placeholder { color: var(--muted); }
+.chat-send {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--red); display: flex; align-items: center;
+  justify-content: center; color: #fff; font-size: 14px; cursor: pointer;
+}
+
+/* ── Right panel cards ── */
+.value-card {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+.value-card-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--muted); margin-bottom: 10px;
+}
+.benefit-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+}
+.benefit-row:last-child { border-bottom: none; padding-bottom: 0; }
+.benefit-persona {
+  font-size: 10px; font-weight: 800; color: var(--red-light);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  min-width: 64px; flex-shrink: 0; margin-top: 1px;
+}
+.benefit-text {
+  font-size: 11.5px; color: var(--muted); line-height: 1.5;
+}
+
+.story-beat {
+  background: rgba(200,16,46,0.06); border: 1px solid rgba(200,16,46,0.2);
+  border-radius: 10px; padding: 12px 14px;
+}
+.story-beat-label {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--red-light); margin-bottom: 6px;
+}
+.story-beat-text {
+  font-size: 12px; color: var(--muted); line-height: 1.6; font-style: italic;
+}
+
+.steps-list { display: flex; flex-direction: column; gap: 8px; }
+.step-item {
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--red); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+.step-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.step-text strong { color: var(--text); }
+
+/* ══════════════════════════════
+   SLIDE 8 — VALUE SUMMARY
+══════════════════════════════ */
+.slide-value { background: var(--bg); }
+.value-table {
+  width: 100%; border-collapse: collapse; margin-top: 24px;
+  font-size: 12.5px;
+}
+.value-table th {
+  text-align: left; padding: 10px 14px;
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.value-table td {
+  padding: 10px 14px; border-bottom: 1px solid rgba(48,54,61,0.5);
+  vertical-align: top; line-height: 1.5; color: var(--muted);
+}
+.value-table tr:last-child td { border-bottom: none; }
+.value-table td:first-child { color: var(--text); font-weight: 600; }
+.value-table td.after { color: #6ee7b7; }
+.vt-before { color: #f87171 !important; }
+
+/* ══════════════════════════════
+   SLIDE 9 — CLOSING / CTA
+══════════════════════════════ */
+.slide-close { background: var(--bg); }
+.slide-close .slide-inner { justify-content: center; }
+
+.close-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 32px;
+}
+.close-card {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+}
+.close-card-num {
+  font-size: 32px; font-weight: 900; color: var(--red);
+  opacity: 0.6; margin-bottom: 8px;
+}
+.close-card-title {
+  font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 8px;
+}
+.close-card-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+/* ══════════════════════════════
+   TYPING ANIMATION
+══════════════════════════════ */
+.typing-dots {
+  display: flex; gap: 4px; align-items: center; padding: 4px 0;
+}
+.typing-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--muted); animation: tdot 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes tdot {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Mobile dashboard mock (scene 2) */
+.mobile-frame {
+  width: 200px; min-width: 200px;
+  background: #111; border-radius: 24px;
+  border: 3px solid #333;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+  display: flex; flex-direction: column;
+  align-self: center;
+  max-height: 100%;
+}
+.mobile-notch {
+  height: 22px; background: #111;
+  display: flex; align-items: center; justify-content: center;
+}
+.mobile-notch-bar {
+  width: 60px; height: 10px;
+  background: #222; border-radius: 10px;
+}
+.mobile-screen {
+  flex: 1; overflow-y: auto;
+  background: var(--sf-navy);
+}
+.mobile-sf-bar {
+  background: #032D60;
+  padding: 8px 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.mobile-sf-logo {
+  font-size: 10px; font-weight: 800; color: #7dd3fc;
+}
+.mobile-sf-page { font-size: 10px; color: rgba(255,255,255,0.6); }
+.mobile-record {
+  background: var(--bg); margin: 8px; border-radius: 8px; overflow: hidden;
+}
+.mobile-record-header {
+  background: var(--surf2); padding: 8px 10px;
+}
+.mobile-record-type { font-size: 8.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+.mobile-record-name { font-size: 12px; font-weight: 700; color: var(--white); margin-top: 2px; }
+.mobile-field-list { padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; }
+.mobile-field { display: flex; justify-content: space-between; align-items: center; }
+.mobile-field-label { font-size: 9px; color: var(--muted); }
+.mobile-field-val { font-size: 10px; font-weight: 600; color: var(--text); }
+.mobile-field-val.red { color: #f87171; }
+.mobile-field-val.amber { color: #fcd34d; }
+.mobile-field-val.green { color: #6ee7b7; }
+.mobile-voice-pill {
+  margin: 8px; background: rgba(200,16,46,0.2); border: 1px solid rgba(200,16,46,0.5);
+  border-radius: 20px; padding: 8px 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+.mobile-voice-icon { font-size: 14px; animation: pulse 1.4s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.mobile-voice-text { font-size: 10px; color: var(--red-light); font-style: italic; }
+.mobile-action-items {
+  margin: 0 8px 8px; background: var(--surf2);
+  border-radius: 8px; overflow: hidden;
+}
+.mobile-ai-header {
+  background: rgba(200,16,46,0.15); padding: 5px 8px;
+  font-size: 9px; font-weight: 700; color: var(--red-light);
+  text-transform: uppercase; letter-spacing: 0.8px;
+}
+.mobile-ai-item {
+  display: flex; gap: 6px; align-items: flex-start;
+  padding: 5px 8px; border-bottom: 1px solid var(--border);
+  font-size: 9.5px; color: var(--muted);
+}
+.mobile-ai-item:last-child { border-bottom: none; }
+.mobile-ai-badge {
+  font-size: 8.5px; font-weight: 700;
+  padding: 1px 5px; border-radius: 6px; flex-shrink: 0;
+}
+.mobile-ai-badge.overdue { background: rgba(248,113,113,0.2); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
+.mobile-ai-badge.new     { background: rgba(46,204,113,0.15);  color: #6ee7b7; border: 1px solid rgba(46,204,113,0.3);  }
+
+/* ══════════════════════════════
+   DASHBOARD MOCK (scene 4)
+══════════════════════════════ */
+.dash-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.dash-card {
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px;
+}
+.dash-card-label {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--muted); margin-bottom: 6px;
+}
+.dash-bar-row {
+  display: flex; align-items: center; gap: 6px; margin-bottom: 4px;
+}
+.dash-bar-label { font-size: 10px; color: var(--muted); width: 60px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dash-bar-track {
+  flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+}
+.dash-bar-fill { height: 100%; border-radius: 3px; background: var(--red); transition: width 0.6s ease; }
+.dash-bar-fill.green { background: #22c55e; }
+.dash-bar-fill.amber { background: #f59e0b; }
+.dash-bar-val { font-size: 10px; font-weight: 700; color: var(--text); width: 28px; text-align: right; }
+
+.kpi-row { display: flex; gap: 8px; }
+.kpi-item {
+  flex: 1; background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px; text-align: center;
+}
+.kpi-val {
+  font-size: 24px; font-weight: 900; color: var(--white);
+}
+.kpi-label { font-size: 9px; color: var(--muted); margin-top: 2px; }
+
+/* ══════════════════════════════
+   MARKETING MOCK (scene 5)
+══════════════════════════════ */
+.journey-flow {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.journey-step {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--surf2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 12px;
+}
+.journey-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.ji-dc  { background: rgba(94,234,212,0.15); }
+.ji-mc  { background: rgba(252,211,77,0.15); }
+.ji-af  { background: rgba(147,197,253,0.15); }
+.ji-sf  { background: rgba(125,211,252,0.15); }
+.journey-content { flex: 1; }
+.journey-step-title { font-size: 11.5px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.journey-step-body  { font-size: 10.5px; color: var(--muted); line-height: 1.45; }
+.journey-arrow {
+  text-align: center; font-size: 14px; color: var(--border); padding: 0;
+  margin: -4px 0;
+}
+
+/* Platform recap (scene 6) */
+.platform-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 8px;
+}
+.platform-card {
+  background: var(--surf); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px;
+}
+.platform-card-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.platform-status {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9.5px; font-weight: 700; padding: 2px 8px; border-radius: 8px;
+  margin-bottom: 8px;
+}
+.ps-active  { background: rgba(46,204,113,0.15); color: #6ee7b7; border: 1px solid rgba(46,204,113,0.3); }
+.ps-partial { background: rgba(245,166,35,0.15); color: #fcd34d; border: 1px solid rgba(245,166,35,0.3); }
+.ps-unlock  { background: rgba(200,16,46,0.15); color: var(--red-light); border: 1px solid rgba(200,16,46,0.3); }
+.platform-card-body { font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+
+/* ══════════════════════════════
+   RESPONSIVE
+══════════════════════════════ */
+@media (max-width: 800px) {
+  .scene-layout { grid-template-columns: 1fr; }
+  .title-scenes { grid-template-columns: repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ NAV BAR ══════ -->
+<nav class="nav-bar" id="nav-bar">
+  <div class="nav-brand">Red Roof Inn <span>× Salesforce</span></div>
+  <div class="nav-sep"></div>
+  <button class="nav-arrow" id="btn-prev">&#8592;</button>
+  <div class="nav-dots" id="nav-dots"></div>
+  <button class="nav-arrow" id="btn-next">&#8594;</button>
+  <div class="nav-sep"></div>
+  <div class="nav-label" id="nav-label"></div>
+  <div class="nav-counter" id="nav-counter"></div>
+  <div class="nav-sep"></div>
+  <div class="nav-hint"><kbd>←</kbd><kbd>→</kbd> to navigate</div>
+</nav>
+
+<div id="carousel">
+
+<!-- ══════════════════════════════════════════
+     SLIDE 1 — TITLE
+══════════════════════════════════════════ -->
+<section class="slide slide-title" id="s1">
+  <div class="slide-inner">
+    <div class="title-overline">🏨 Demo Storyboard &nbsp;·&nbsp; 6 Scenes</div>
+    <div class="title-main">
+      Red Roof Inn<br>
+      <span class="red">Franchise Growth</span><br>
+      <span class="thin">Platform Demo</span>
+    </div>
+    <p class="title-sub">Transform franchise operations from administrative burden to strategic growth engine — on a platform you already own.</p>
+
+    <div class="title-products">
+      <div class="product-badge pb-sales">Sales Cloud</div>
+      <div class="product-badge pb-exp">Experience Cloud</div>
+      <div class="product-badge pb-mktg">Marketing Cloud</div>
+      <div class="product-badge pb-af">Agentforce</div>
+      <div class="product-badge pb-dc">Data Cloud</div>
+    </div>
+
+    <div class="title-scenes">
+      <div class="scene-pill"><span class="sp-num">01</span>Pre-Visit Intelligence</div>
+      <div class="scene-pill"><span class="sp-num">02</span>The Property Visit</div>
+      <div class="scene-pill"><span class="sp-num">03</span>Franchisee Portal</div>
+      <div class="scene-pill"><span class="sp-num">04</span>Leadership Dashboard</div>
+      <div class="scene-pill"><span class="sp-num">05</span>Franchise Development</div>
+      <div class="scene-pill"><span class="sp-num">06</span>You Already Own This</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 2 — SCENE 1: PRE-VISIT INTELLIGENCE
+══════════════════════════════════════════ -->
+<section class="slide slide-scene" id="s2">
+  <div class="slide-inner">
+    <div class="scene-header">
+      <div class="scene-num-badge">Scene 1 of 6</div>
+      <div class="scene-title">The Prepared FOD — Pre-Visit Intelligence</div>
+      <div class="scene-persona-row">
+        <div class="persona-chip"><div class="pc-dot"></div>Marcus — Franchise Operations Director</div>
+      </div>
+      <div class="feature-chips">
+        <div class="feature-chip fc-dc">Data Cloud</div>
+        <div class="feature-chip fc-sales">Sales Cloud</div>
+        <div class="feature-chip fc-af">Agentforce</div>
+      </div>
+    </div>
+
+    <div class="scene-layout">
+      <!-- Left: SF mock -->
+      <div class="scene-left">
+        <div class="mock-window">
+          <div class="mock-topbar">
+            <div class="mock-dots">
+              <div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div>
+            </div>
+            <div class="mock-topbar-title">Salesforce — Marcus FOD · My Upcoming Visits</div>
+          </div>
+          <div class="mock-body">
+            <div class="sf-record-header">
+              <div class="sf-record-type">Account — Hotel Property</div>
+              <div class="sf-record-name">Red Roof Inn — Dayton, OH</div>
+              <div class="sf-record-pills">
+                <div class="sf-pill">Visit: Tomorrow 9am</div>
+                <div class="sf-pill amber">PIP Score: 71/100</div>
+                <div class="sf-pill red">3 Overdue Actions</div>
+              </div>
+            </div>
+
+            <div class="metric-grid">
+              <div class="metric-card">
+                <div class="metric-label">RevPAR MTD</div>
+                <div class="metric-value">$48<span style="font-size:14px;font-weight:400;color:var(--muted)">.20</span></div>
+                <div class="metric-sub metric-down">▼ 8% vs prior year</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">Occupancy</div>
+                <div class="metric-value">62<span style="font-size:14px;font-weight:400;color:var(--muted)">%</span></div>
+                <div class="metric-sub metric-warn">Target: 70% · Below</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">Open PIP Items</div>
+                <div class="metric-value">14</div>
+                <div class="metric-sub metric-down">↑ 3 added last visit</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-label">Last Visit</div>
+                <div class="metric-value" style="font-size:16px;">42d</div>
+                <div class="metric-sub">ago · Feb 14</div>
+              </div>
+            </div>
+
+            <div class="ai-block">
+              <div class="ai-block-header">
+                <div class="ai-icon">✦</div>
+                Agentforce Pre-Visit Brief
+              </div>
+              <div class="ai-body">Morning Marcus. Tomorrow's visit to Dayton. Key talking points:</div>
+              <ul class="ai-bullets">
+                <li>RevPAR is trending -8% — linked to low weekend occupancy. Owner is aware of rate strategy gap.</li>
+                <li>3 overdue PIP items: exterior signage, lobby refresh, pool area. All from the Feb visit.</li>
+                <li>Lobby signage noted as top guest complaint in last 30 Q-reviews — good conversation anchor.</li>
+                <li>Owner Jordan Bailey last called you 12 days ago re: renovation financing program — follow up.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: value panel -->
+      <div class="scene-right">
+        <div class="story-beat">
+          <div class="story-beat-label">The Story</div>
+          <div class="story-beat-text">"Like every visit, he'd spend his evening pulling last quarter's RevPAR from PowerBI, checking open action items in Salesforce, and copying it all into an email to himself. Tonight, that changes."</div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">What the Demo Shows</div>
+          <div class="steps-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>My Upcoming Visits</strong> dashboard — Dayton property surfaces with full pre-visit context in one click</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Unified property view</strong> — RevPAR trend (Azure/Data Cloud sourced), open PIP items, and prior visit history on one screen</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>Zero tab-switching</strong> — no PowerBI, no email, no spreadsheet export</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text"><strong>Agentforce pre-visit brief</strong> — one-click AI summary of talking points in plain language</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">Who Wins</div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Marcus</div>
+            <div class="benefit-text">Prep drops from 2+ hours to under 10 minutes. Walks in informed and consultative.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Tan (SVP)</div>
+            <div class="benefit-text">FODs standardized on a single pre-visit workflow. Visit quality becomes consistent.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Zachary</div>
+            <div class="benefit-text">Azure data already collected — no new investment. Platform working harder.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 3 — SCENE 2: THE PROPERTY VISIT
+══════════════════════════════════════════ -->
+<section class="slide slide-scene" id="s3">
+  <div class="slide-inner">
+    <div class="scene-header">
+      <div class="scene-num-badge">Scene 2 of 6</div>
+      <div class="scene-title">The Property Visit — One Pane of Glass</div>
+      <div class="scene-persona-row">
+        <div class="persona-chip"><div class="pc-dot"></div>Marcus — Franchise Operations Director</div>
+      </div>
+      <div class="feature-chips">
+        <div class="feature-chip fc-sales">Sales Cloud</div>
+        <div class="feature-chip fc-mob">Salesforce Mobile</div>
+        <div class="feature-chip fc-af">Agentforce</div>
+      </div>
+    </div>
+
+    <div class="scene-layout">
+      <!-- Left: mobile mock -->
+      <div class="scene-left" style="flex-direction:row;gap:16px;align-items:flex-start;">
+        <div class="mobile-frame">
+          <div class="mobile-notch"><div class="mobile-notch-bar"></div></div>
+          <div class="mobile-screen">
+            <div class="mobile-sf-bar">
+              <div class="mobile-sf-logo">SF</div>
+              <div class="mobile-sf-page">Visit Activity · Dayton</div>
+            </div>
+
+            <div class="mobile-record">
+              <div class="mobile-record-header">
+                <div class="mobile-record-type">Visit Activity</div>
+                <div class="mobile-record-name">Dayton OH · Mar 27</div>
+              </div>
+              <div class="mobile-field-list">
+                <div class="mobile-field">
+                  <div class="mobile-field-label">PIP Score</div>
+                  <div class="mobile-field-val amber">71/100</div>
+                </div>
+                <div class="mobile-field">
+                  <div class="mobile-field-label">Open Items</div>
+                  <div class="mobile-field-val red">14</div>
+                </div>
+                <div class="mobile-field">
+                  <div class="mobile-field-label">Visit Status</div>
+                  <div class="mobile-field-val green">In Progress</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mobile-voice-pill">
+              <div class="mobile-voice-icon">🎙</div>
+              <div class="mobile-voice-text">"Lobby signage faded, needs replacement by Q3…"</div>
+            </div>
+
+            <div class="mobile-action-items">
+              <div class="mobile-ai-header">Open Action Items</div>
+              <div class="mobile-ai-item">
+                <div class="mobile-ai-badge overdue">Overdue</div>
+                Exterior signage replacement
+              </div>
+              <div class="mobile-ai-item">
+                <div class="mobile-ai-badge overdue">Overdue</div>
+                Lobby furniture refresh
+              </div>
+              <div class="mobile-ai-item">
+                <div class="mobile-ai-badge new">New</div>
+                Replace lobby signage by Q3
+              </div>
+            </div>
+
+            <div style="margin:8px;">
+              <div class="ai-block" style="padding:8px 10px;">
+                <div class="ai-block-header" style="margin-bottom:4px;">
+                  <div class="ai-icon" style="width:14px;height:14px;font-size:8px;">✦</div>
+                  <span style="font-size:9px;">Agentforce Coaching</span>
+                </div>
+                <div class="ai-body" style="font-size:10px;color:var(--muted);">Closing convo tip: Jordan is motivated by ROI. Lead with financing program savings vs. full renovation cost.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop view alongside -->
+        <div class="mock-window" style="flex:1;">
+          <div class="mock-topbar">
+            <div class="mock-dots">
+              <div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div>
+            </div>
+            <div class="mock-topbar-title">Salesforce — Visit Record · Dayton OH</div>
+          </div>
+          <div class="mock-body">
+            <div class="sf-record-header">
+              <div class="sf-record-type">Visit Activity — In Progress</div>
+              <div class="sf-record-name">Dayton, OH — Mar 27, 2025</div>
+              <div class="sf-record-pills">
+                <div class="sf-pill green">Logged via Voice</div>
+                <div class="sf-pill">Assigned: Marcus FOD</div>
+              </div>
+            </div>
+
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;">Voice-Captured Observations</div>
+            <div style="background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:11.5px;color:var(--muted);line-height:1.6;">
+              <div style="color:var(--text);margin-bottom:4px;">🎙 Transcribed · 3 notes</div>
+              <div style="margin-bottom:3px;">"Lobby signage is faded, needs replacement by Q3, owner is aware"</div>
+              <div style="margin-bottom:3px;">"Pool area surpassed inspection — staff doing great, no action needed"</div>
+              <div>"New GM started 2 weeks ago — strong first impression, follow up in 30 days"</div>
+            </div>
+
+            <div class="ai-block">
+              <div class="ai-block-header">
+                <div class="ai-icon">✦</div>
+                New Action Item Created
+              </div>
+              <div class="ai-body">
+                <strong>Replace lobby signage · Due: Jun 30</strong><br>
+                <span style="color:var(--muted);">Assigned to: Jordan Bailey (Property Manager) · Linked to PIP item #14 · Visible to Tan's dashboard</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: value -->
+      <div class="scene-right">
+        <div class="story-beat">
+          <div class="story-beat-label">The Story</div>
+          <div class="story-beat-text">"He pulls out his phone, opens the Salesforce Mobile app, and just starts talking. Everything goes straight into the visit record, hands-free, in real time. No clipboard. No follow-up email to himself."</div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">What the Demo Shows</div>
+          <div class="steps-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Voice-entry visit logging</strong> — Marcus dictates; notes transcribed and linked to property record in real time</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Open Action Items panel</strong> — 3 overdue items surface without leaving the mobile view</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>New action item via voice</strong> — logged, linked to PIP, assigned to property manager instantly</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text"><strong>Agentforce coaching prompt</strong> — contextual advice for the closing conversation, based on property data</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">Who Wins</div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Marcus</div>
+            <div class="benefit-text">Every visit is documented. Zero stale action items. Stays consultative, not clerical.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Tan (SVP)</div>
+            <div class="benefit-text">Visit completion rates, action item age, and FOD activity visible in real time.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Zachary</div>
+            <div class="benefit-text">Property accountability is now a data story, not a "did Marcus tell me?" story.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 4 — SCENE 3: FRANCHISEE PORTAL
+══════════════════════════════════════════ -->
+<section class="slide slide-scene" id="s4">
+  <div class="slide-inner">
+    <div class="scene-header">
+      <div class="scene-num-badge">Scene 3 of 6 · The Surprise</div>
+      <div class="scene-title">The Franchisee Portal — Agentforce-Powered PIP Ownership</div>
+      <div class="scene-persona-row">
+        <div class="persona-chip"><div class="pc-dot"></div>Jordan — Franchisee (Multi-Property Owner)</div>
+      </div>
+      <div class="feature-chips">
+        <div class="feature-chip fc-exp">Experience Cloud</div>
+        <div class="feature-chip fc-af">Agentforce</div>
+        <div class="feature-chip fc-sales">Sales Cloud</div>
+      </div>
+    </div>
+
+    <div class="scene-layout">
+      <!-- Left: franchisee portal chat -->
+      <div class="scene-left">
+        <div class="chat-window">
+          <div class="chat-topbar">
+            <div class="chat-topbar-avatar">🏨</div>
+            <div>
+              <div class="chat-topbar-name">Red Roof Franchisee Portal</div>
+              <div class="chat-topbar-sub">PIP Agent · Powered by Agentforce</div>
+            </div>
+            <div class="chat-topbar-dot"></div>
+          </div>
+          <div class="chat-body" id="s4-messages"></div>
+          <div class="chat-chips" id="s4-chips" style="padding:6px 14px 0;display:none;"></div>
+          <div class="chat-input-bar">
+            <input id="s4-input" class="chat-input-field" type="text" placeholder="Ask your PIP Agent…" autocomplete="off" />
+            <div class="chat-send" id="s4-send">➤</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: value -->
+      <div class="scene-right">
+        <div class="story-beat">
+          <div class="story-beat-label">The Surprise Moment</div>
+          <div class="story-beat-text">"They come in thinking this is a CRM demo for the internal team. Showing that the franchisee — the customer's customer — has their own AI-powered experience reframes the entire value proposition. Red Roof Inn isn't just using Salesforce. They're extending it to the people who pay them brand fees."</div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">What the Demo Shows</div>
+          <div class="steps-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Property Dashboard</strong> — PIP score, open action items, compliance status all in one portal view</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Agentforce PIP Agent</strong> — Jordan asks "What should I fix first to improve my score the fastest?" — gets a prioritized recommendation</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>Program recommendation</strong> — agent surfaces a renovation financing program with Learn More / Sign Up CTA</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text"><strong>Enrollment logged back</strong> — Jordan's signup action appears in Marcus's Salesforce view automatically</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">Who Wins</div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Jordan</div>
+            <div class="benefit-text">No more waiting for a FOD call to know what to do. Owns the PIP path with a guided roadmap.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Marcus</div>
+            <div class="benefit-text">Franchisees are self-directing. His coaching is amplified across all 63 properties, even when he's not there.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Tan (SVP)</div>
+            <div class="benefit-text">PIP completion becomes a scalable metric. This is what makes franchisees actually use the platform.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 5 — SCENE 4: LEADERSHIP DASHBOARD
+══════════════════════════════════════════ -->
+<section class="slide slide-scene" id="s5">
+  <div class="slide-inner">
+    <div class="scene-header">
+      <div class="scene-num-badge">Scene 4 of 6</div>
+      <div class="scene-title">Leadership Accountability — The Dashboard That Replaces the Spreadsheet</div>
+      <div class="scene-persona-row">
+        <div class="persona-chip"><div class="pc-dot"></div>Tan Lutka — SVP Franchise Operations</div>
+        <div class="persona-chip"><div class="pc-dot"></div>Zachary — President</div>
+      </div>
+      <div class="feature-chips">
+        <div class="feature-chip fc-sales">Sales Cloud</div>
+        <div class="feature-chip fc-af">Agentforce</div>
+      </div>
+    </div>
+
+    <div class="scene-layout">
+      <!-- Left: dashboard mock -->
+      <div class="scene-left">
+        <div class="mock-window">
+          <div class="mock-topbar">
+            <div class="mock-dots">
+              <div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div>
+            </div>
+            <div class="mock-topbar-title">Franchise Operations Executive Dashboard</div>
+          </div>
+          <div class="mock-body">
+            <div class="kpi-row">
+              <div class="kpi-item">
+                <div class="kpi-val">87<span style="font-size:14px;color:var(--muted)">%</span></div>
+                <div class="kpi-label">Visit Completion Rate</div>
+              </div>
+              <div class="kpi-item">
+                <div class="kpi-val">14</div>
+                <div class="kpi-label">Avg Open Action Items</div>
+              </div>
+              <div class="kpi-item">
+                <div class="kpi-val" style="color:#f87171;">23d</div>
+                <div class="kpi-label">Avg Action Item Age</div>
+              </div>
+            </div>
+
+            <div class="dash-grid">
+              <div class="dash-card">
+                <div class="dash-card-label">Visit Rate by FOD</div>
+                <div class="dash-bar-row">
+                  <div class="dash-bar-label">Marcus</div>
+                  <div class="dash-bar-track"><div class="dash-bar-fill green" style="width:92%;"></div></div>
+                  <div class="dash-bar-val">92%</div>
+                </div>
+                <div class="dash-bar-row">
+                  <div class="dash-bar-label">Sarah K.</div>
+                  <div class="dash-bar-track"><div class="dash-bar-fill green" style="width:88%;"></div></div>
+                  <div class="dash-bar-val">88%</div>
+                </div>
+                <div class="dash-bar-row">
+                  <div class="dash-bar-label">Derek R.</div>
+                  <div class="dash-bar-track"><div class="dash-bar-fill amber" style="width:61%;"></div></div>
+                  <div class="dash-bar-val" style="color:#f59e0b;">61%</div>
+                </div>
+                <div class="dash-bar-row">
+                  <div class="dash-bar-label">Lisa T.</div>
+                  <div class="dash-bar-track"><div class="dash-bar-fill" style="width:44%;"></div></div>
+                  <div class="dash-bar-val" style="color:#f87171;">44%</div>
+                </div>
+              </div>
+
+              <div class="dash-card">
+                <div class="dash-card-label">PIP Score Distribution</div>
+                <div class="dash-bar-row">
+                  <div class="dash-bar-label">90–100</div>
+                  <div class="dash-bar-track"><div class="dash-bar-fill green" style="width:22%;"></div></div>
+                  <div class="dash-bar-val">22%</div>
+                </div>
+                <div class="dash-bar-row">
+                  <div class="dash-bar-label">75–89</div>
+                  <div class="dash-bar-track"><div class="dash-bar-fill green" style="width:41%;"></div></div>
+                  <div class="dash-bar-val">41%</div>
+                </div>
+                <div class="dash-bar-row">
+                  <div class="dash-bar-label">60–74</div>
+                  <div class="dash-bar-track"><div class="dash-bar-fill amber" style="width:27%;"></div></div>
+                  <div class="dash-bar-val">27%</div>
+                </div>
+                <div class="dash-bar-row">
+                  <div class="dash-bar-label">Below 60</div>
+                  <div class="dash-bar-track"><div class="dash-bar-fill" style="width:10%;"></div></div>
+                  <div class="dash-bar-val" style="color:#f87171;">10%</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ai-block">
+              <div class="ai-block-header">
+                <div class="ai-icon">✦</div>
+                Agentforce Executive Briefing — Week of Mar 24
+              </div>
+              <div class="ai-body">Zachary asked: "What happened in franchise operations this week?"</div>
+              <ul class="ai-bullets">
+                <li><strong>Highlight:</strong> 14 property visits completed vs 12 target. Marcus and Sarah K. both above benchmark.</li>
+                <li><strong>Risk:</strong> Derek R. at 61% visit rate. 8 properties haven't been visited in 45+ days — flagged for follow-up.</li>
+                <li><strong>Action item age</strong> ticking up to 23 days avg — driven by 6 properties with ownership transition complexity.</li>
+                <li><strong>Recommended action:</strong> 1:1 with Derek R. this week. Pull his territory for workload review.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: value -->
+      <div class="scene-right">
+        <div class="story-beat">
+          <div class="story-beat-label">The Story</div>
+          <div class="story-beat-text">"Every Monday morning, Zachary's assistant sits down and manually compiles a franchise health report. By the time it lands in his inbox, some of it is already out of date. Tan has asked twice: 'Can I just see a dashboard?' The answer is now: it's already here."</div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">What the Demo Shows</div>
+          <div class="steps-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Franchise Operations Dashboard</strong> — visit rate by FOD, action item age by property, PIP distribution, week-over-week trend</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Drill-down</strong> — Tan clicks an underperforming FOD and sees specific properties and open items behind the number</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>Agentforce Executive Briefing</strong> — plain-language summary with highlights, risks, and recommended actions on demand</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text"><strong>Monday spreadsheet retired</strong> — auto-scheduled Slack digest replaces the assistant's 2-hour weekly task</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">Who Wins</div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Tan</div>
+            <div class="benefit-text">Holds FODs accountable from day one — no ramp time required to understand network state.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Zachary</div>
+            <div class="benefit-text">Accountability is real-time and requires zero human compilation. Assistant's Monday hours freed.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Board</div>
+            <div class="benefit-text">Red Roof can now demonstrate operational rigor with data — not anecdotes.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 6 — SCENE 5: FRANCHISE DEVELOPMENT
+══════════════════════════════════════════ -->
+<section class="slide slide-scene" id="s6">
+  <div class="slide-inner">
+    <div class="scene-header">
+      <div class="scene-num-badge">Scene 5 of 6</div>
+      <div class="scene-title">Franchise Development — Marketing Drives Expansion</div>
+      <div class="scene-persona-row">
+        <div class="persona-chip"><div class="pc-dot"></div>Priya — Franchise Marketing Manager</div>
+      </div>
+      <div class="feature-chips">
+        <div class="feature-chip fc-mktg">Marketing Cloud</div>
+        <div class="feature-chip fc-dc">Data Cloud</div>
+        <div class="feature-chip fc-af">Agentforce</div>
+        <div class="feature-chip fc-sales">Sales Cloud</div>
+      </div>
+    </div>
+
+    <div class="scene-layout">
+      <!-- Left: journey mock -->
+      <div class="scene-left">
+        <div class="mock-window">
+          <div class="mock-topbar">
+            <div class="mock-dots">
+              <div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div>
+            </div>
+            <div class="mock-topbar-title">Marketing Cloud — Franchise Development Journeys</div>
+          </div>
+          <div class="mock-body">
+
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;">Data Cloud Segment: Expansion-Ready Franchisees</div>
+            <div style="background:var(--surf2);border:1px solid rgba(94,234,212,0.3);border-radius:8px;padding:10px 12px;margin-bottom:10px;">
+              <div style="font-size:11.5px;color:var(--text);margin-bottom:5px;font-weight:600;">Segment Criteria (unified from Ops + Marketing)</div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div style="font-size:10.5px;color:var(--muted);">✓ PIP Score ≥ 85 for last 2 quarters</div>
+                <div style="font-size:10.5px;color:var(--muted);">✓ RevPAR trend positive (3-month rolling)</div>
+                <div style="font-size:10.5px;color:var(--muted);">✓ Open action items &lt; 5</div>
+                <div style="font-size:10.5px;color:var(--muted);">✓ Engaged with portal in last 30 days</div>
+              </div>
+              <div style="margin-top:8px;font-size:11px;font-weight:700;color:#5eead4;">47 franchisees qualify · Updated daily</div>
+            </div>
+
+            <div class="journey-flow">
+              <div class="journey-step">
+                <div class="journey-icon ji-dc">📊</div>
+                <div class="journey-content">
+                  <div class="journey-step-title">Trigger: Performance Threshold Crossed</div>
+                  <div class="journey-step-body">Jordan Bailey's Dayton property hits PIP 88 + positive RevPAR trend → enters Expansion Journey</div>
+                </div>
+              </div>
+              <div class="journey-arrow">↓</div>
+              <div class="journey-step">
+                <div class="journey-icon ji-mc">📧</div>
+                <div class="journey-content">
+                  <div class="journey-step-title">Touch 1: Personalized Email from Marcus</div>
+                  <div class="journey-step-body">Auto-generated, sent from Marcus's email — highlights Jordan's specific performance wins, intro to expansion ROI calculator</div>
+                </div>
+              </div>
+              <div class="journey-arrow">↓</div>
+              <div class="journey-step">
+                <div class="journey-icon ji-exp" style="background:rgba(196,181,253,0.15);">🌐</div>
+                <div class="journey-content">
+                  <div class="journey-step-title">Touch 2: Portal Notification + ROI Calculator</div>
+                  <div class="journey-step-body">Jordan logs into portal — expansion opportunity card with territory availability and projected returns</div>
+                </div>
+              </div>
+              <div class="journey-arrow">↓</div>
+              <div class="journey-step">
+                <div class="journey-icon ji-sf">💼</div>
+                <div class="journey-content">
+                  <div class="journey-step-title">Touch 3: Opportunity Created for FOD</div>
+                  <div class="journey-step-body">Salesforce Opportunity auto-created for Marcus to follow up — pipeline visible in Franchise Development dashboard</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:10px;background:var(--surf2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+              <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;">Net-New Prospect Journey</div>
+              <div style="font-size:11.5px;color:var(--text);margin-bottom:4px;font-weight:600;">Agentforce Lead Scoring</div>
+              <div style="font-size:11px;color:var(--muted);">Inbound inquiry leads scored on financial profile, geography, and available territory — high-fit leads surface to Franchise Development team automatically</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: value -->
+      <div class="scene-right">
+        <div class="story-beat">
+          <div class="story-beat-label">The Story</div>
+          <div class="story-beat-text">"Red Roof's best growth opportunities are hiding in plain sight — the franchisees with the highest PIP scores and strongest RevPAR trends. Priya knows both of these things exist. She just can't see either of them clearly, because franchise operations data and marketing data live in different worlds. Not anymore."</div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">What the Demo Shows</div>
+          <div class="steps-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Data Cloud segment</strong> — combines ops performance with marketing signals to identify expansion-ready franchisees</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Existing Franchisee Expansion Journey</strong> — personalized, multi-touch outreach triggered by performance threshold</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>Net-New Prospect Journey</strong> — Agentforce scores inbound leads on fit; high-quality leads surface automatically</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-text"><strong>Franchise Development Pipeline</strong> — Priya and CDO see total pipeline, source breakdown, and projected openings</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">Who Wins</div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Priya</div>
+            <div class="benefit-text">Campaigns powered by operational data — not guesswork. Knows which franchisees are ready before sending the first email.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">CDO Team</div>
+            <div class="benefit-text">Measurable pipeline for new property openings. Opportunities identified, tracked, and closed — not hoped for.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Zachary</div>
+            <div class="benefit-text">Franchise growth and operations are now a connected story on one platform. This is what a franchise growth platform looks like.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 7 — SCENE 6: YOU ALREADY OWN THIS
+══════════════════════════════════════════ -->
+<section class="slide slide-scene" id="s7">
+  <div class="slide-inner">
+    <div class="scene-header">
+      <div class="scene-num-badge">Scene 6 of 6 · The "Aha" Moment</div>
+      <div class="scene-title">The Unlocked Platform — You Already Own This</div>
+      <div class="scene-persona-row">
+        <div class="persona-chip"><div class="pc-dot"></div>Zachary — President</div>
+        <div class="persona-chip"><div class="pc-dot"></div>Susan Enderle — Salesforce Admin</div>
+      </div>
+      <div class="feature-chips">
+        <div class="feature-chip fc-sales">Sales Cloud</div>
+        <div class="feature-chip fc-af">Agentforce</div>
+        <div class="feature-chip fc-dc">Data Cloud</div>
+        <div class="feature-chip fc-exp">Experience Cloud</div>
+      </div>
+    </div>
+
+    <div class="scene-layout">
+      <!-- Left: platform readiness -->
+      <div class="scene-left">
+        <div class="mock-window">
+          <div class="mock-topbar">
+            <div class="mock-dots">
+              <div class="mock-dot r"></div><div class="mock-dot y"></div><div class="mock-dot g"></div>
+            </div>
+            <div class="mock-topbar-title">Platform Activation Review</div>
+          </div>
+          <div class="mock-body">
+            <div class="platform-grid">
+              <div class="platform-card">
+                <div class="platform-card-title">Sales Cloud</div>
+                <div class="platform-status ps-active">● Active</div>
+                <div class="platform-card-body">Property accounts, visit activities, action item tracking — foundation already deployed</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-card-title">Experience Cloud</div>
+                <div class="platform-status ps-unlock">● Activate Now</div>
+                <div class="platform-card-body">Franchisee portal license available. PIP Agent deployment: 6-week buildout</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-card-title">Agentforce</div>
+                <div class="platform-status ps-partial">● Partial</div>
+                <div class="platform-card-body">Pre-visit brief + executive briefing: configured. Visit coaching + PIP Agent: scope defined</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-card-title">Data Cloud</div>
+                <div class="platform-status ps-partial">● Partial</div>
+                <div class="platform-card-body">Azure PMS connector in scope. Unified property view depends on this activation</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-card-title">Marketing Cloud</div>
+                <div class="platform-status ps-unlock">● Activate Now</div>
+                <div class="platform-card-body">Franchise development journeys require Marketing Cloud + Data Cloud segment connection</div>
+              </div>
+              <div class="platform-card">
+                <div class="platform-card-title">Territory Alignment</div>
+                <div class="platform-status ps-unlock">● Activate Now</div>
+                <div class="platform-card-body">FOD coverage map, property count, visit frequency — no new license required</div>
+              </div>
+            </div>
+
+            <div class="ai-block" style="margin-top:4px;">
+              <div class="ai-block-header">
+                <div class="ai-icon">✦</div>
+                Agentforce Used Across All 6 Scenes
+              </div>
+              <ul class="ai-bullets">
+                <li><strong>Pre-Visit Brief</strong> — Marcus's 10-minute morning prep</li>
+                <li><strong>Visit Coaching</strong> — contextual closing conversation prompts</li>
+                <li><strong>PIP Guidance</strong> — Jordan's franchisee portal agent</li>
+                <li><strong>Executive Briefing</strong> — Zachary's weekly plain-language summary</li>
+                <li><strong>Lead Scoring</strong> — Priya's franchise development pipeline</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: value -->
+      <div class="scene-right">
+        <div class="story-beat">
+          <div class="story-beat-label">The "Aha" Moment</div>
+          <div class="story-beat-text">"Everything we just showed — the pre-visit briefing, the franchisee portal agent, the executive dashboard, the marketing growth engine — most of this is either already licensed or unlockable without a full reimplementation. The question was never 'can Salesforce do this?' The question was 'are we using what we already have?'"</div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">What the Demo Shows</div>
+          <div class="steps-list">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-text"><strong>Territory Alignment</strong> — FOD coverage map with property count, visit frequency, and capacity modeling</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-text"><strong>Agentforce capabilities summary</strong> — every AI action across all 5 scenes, all on the same platform, all auditable</div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-text"><strong>Platform ROI framing</strong> — every capability shown is either already licensed or a single activation step away</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="value-card">
+          <div class="value-card-title">Who Wins</div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Susan</div>
+            <div class="benefit-text">Platform that was 60% built now has a clear roadmap to 100% — and she's the architect of that journey.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Tan</div>
+            <div class="benefit-text">Every efficiency gain translates directly into FOD capacity — more properties visited, better supported, same team.</div>
+          </div>
+          <div class="benefit-row">
+            <div class="benefit-persona">Zachary</div>
+            <div class="benefit-text">The ROI argument isn't about new spend. It's about activating what you already own before evaluating anything else.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 8 — BUSINESS VALUE SUMMARY
+══════════════════════════════════════════ -->
+<section class="slide slide-value" id="s8">
+  <div class="slide-inner" style="overflow-y:auto;">
+    <div class="eyebrow">Business Value</div>
+    <div class="slide-h1" style="font-size:clamp(24px,3vw,40px);">Before & After</div>
+    <p class="slide-desc">Six outcomes, one platform, zero rip-and-replace.</p>
+
+    <table class="value-table">
+      <thead>
+        <tr>
+          <th>Outcome</th>
+          <th>Before Salesforce</th>
+          <th>After Salesforce</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>FOD Pre-Visit Prep</td>
+          <td class="vt-before">2+ hours pulling from PowerBI + Salesforce separately</td>
+          <td class="after">Under 10 minutes — unified brief auto-generated by Agentforce</td>
+        </tr>
+        <tr>
+          <td>Franchisee PIP Engagement</td>
+          <td class="vt-before">Passive — franchisees wait for FOD to tell them status</td>
+          <td class="after">Active — franchisees self-serve on an AI-guided improvement roadmap via Experience Cloud</td>
+        </tr>
+        <tr>
+          <td>Property Visit Accountability</td>
+          <td class="vt-before">No visibility into visit rates or open action item age</td>
+          <td class="after">Real-time dashboard — FOD activity, action items, and property health visible to leadership</td>
+        </tr>
+        <tr>
+          <td>Executive Reporting</td>
+          <td class="vt-before">Manual spreadsheet compiled by assistant every Monday</td>
+          <td class="after">Automated — Agentforce-generated weekly briefing, always current</td>
+        </tr>
+        <tr>
+          <td>Franchise Development Pipeline</td>
+          <td class="vt-before">Disconnected — marketing and operations data don't talk</td>
+          <td class="after">Unified — Data Cloud segments drive expansion outreach to the right franchisees at the right time</td>
+        </tr>
+        <tr>
+          <td>Platform ROI</td>
+          <td class="vt-before">Partially implemented; licensing underutilized</td>
+          <td class="after">Full activation of existing licenses — Territory Alignment, Agentforce, Data Cloud, Experience Cloud</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SLIDE 9 — CLOSING / CTA
+══════════════════════════════════════════ -->
+<section class="slide slide-close" id="s9">
+  <div class="slide-inner">
+    <div class="eyebrow">The Ask</div>
+    <div class="slide-h1">Not a New Platform.<br>A <span style="color:var(--red-light);">Finished</span> One.</div>
+    <p class="slide-desc" style="max-width:680px;">Red Roof Inn doesn't need to evaluate Dynamics or Zoho. The question isn't "which platform?" — it's "how fast can we activate what we already have?" The cost of switching mid-turnaround is its own kind of risk.</p>
+
+    <div class="close-grid">
+      <div class="close-card">
+        <div class="close-card-num">18mo</div>
+        <div class="close-card-title">Cost of Migration</div>
+        <div class="close-card-body">A platform migration mid-turnaround doesn't just cost money — it costs the operational coherence the next 18 months require. That's the real risk on the table.</div>
+      </div>
+      <div class="close-card">
+        <div class="close-card-num">6wk</div>
+        <div class="close-card-title">Time to First Value</div>
+        <div class="close-card-body">Pre-visit intelligence and executive dashboard are ready to activate now. Franchisee portal + marketing journeys: 6-week buildout on existing licenses.</div>
+      </div>
+      <div class="close-card">
+        <div class="close-card-num">100%</div>
+        <div class="close-card-title">Platform Already Paid For</div>
+        <div class="close-card-body">Every capability in this demo runs on licenses Red Roof Inn currently holds. The ROI argument is about activation, not spend.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:28px;padding:16px 20px;background:rgba(200,16,46,0.08);border:1px solid rgba(200,16,46,0.25);border-radius:12px;max-width:720px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--red-light);margin-bottom:8px;">Proposed Next Step</div>
+      <div style="font-size:14px;color:var(--text);font-weight:600;margin-bottom:6px;">90-Day Activation Roadmap</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.65;">
+        A focused engagement to finish building the platform Red Roof Inn started. Days 1–30: pre-visit intelligence + executive dashboard live. Days 31–60: franchisee portal + PIP Agent. Days 61–90: marketing journeys + franchise development pipeline.
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /carousel -->
+
+<script>
+/* ══════════════════════════════════════════
+   CAROUSEL ENGINE
+══════════════════════════════════════════ */
+const SLIDES = [
+  { id: 's1', label: 'Overview' },
+  { id: 's2', label: 'Pre-Visit Intelligence' },
+  { id: 's3', label: 'The Property Visit' },
+  { id: 's4', label: 'Franchisee Portal' },
+  { id: 's5', label: 'Leadership Dashboard' },
+  { id: 's6', label: 'Franchise Development' },
+  { id: 's7', label: 'You Already Own This' },
+  { id: 's8', label: 'Value Summary' },
+  { id: 's9', label: 'The Ask' },
+];
+
+let current = 0;
+
+function buildNav() {
+  const dots = document.getElementById('nav-dots');
+  SLIDES.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    d.title = s.label;
+    d.onclick = () => goTo(i);
+    dots.appendChild(d);
+  });
+}
+
+function updateNav() {
+  document.querySelectorAll('.nav-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === current);
+  });
+  document.getElementById('nav-label').textContent = SLIDES[current].label;
+  document.getElementById('nav-counter').textContent = `${current + 1} / ${SLIDES.length}`;
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === SLIDES.length - 1;
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= SLIDES.length || idx === current) return;
+  const prev = current;
+  current = idx;
+  SLIDES.forEach((s, i) => {
+    const el = document.getElementById(s.id);
+    el.classList.remove('active', 'prev');
+    if (i === current) el.classList.add('active');
+    else if (i === prev)  el.classList.add('prev');
+  });
+  updateNav();
+  if (idx === 3) initS4Chat();
+}
+
+document.getElementById('btn-prev').onclick = () => goTo(current - 1);
+document.getElementById('btn-next').onclick = () => goTo(current + 1);
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') goTo(current + 1);
+  if (e.key === 'ArrowLeft')  goTo(current - 1);
+});
+
+buildNav();
+goTo(0);
+
+/* ══════════════════════════════════════════
+   SCENE 3 — FRANCHISEE PORTAL CHAT (s4)
+══════════════════════════════════════════ */
+var s4Initialized = false;
+
+function initS4Chat() {
+  if (s4Initialized) return;
+  s4Initialized = true;
+  var msgs  = document.getElementById('s4-messages');
+  var chips = document.getElementById('s4-chips');
+  var input = document.getElementById('s4-input');
+  var send  = document.getElementById('s4-send');
+  var state = { step: 'greeting', locked: false };
+
+  function scroll() { msgs.scrollTop = msgs.scrollHeight; }
+
+  function addUser(text) {
+    var d = document.createElement('div');
+    d.className = 'chat-msg-user';
+    d.innerHTML = '<div class="chat-bubble-user">' + text + '</div>';
+    msgs.appendChild(d);
+    scroll();
+  }
+
+  function addBot(text, delay) {
+    return new Promise(res => {
+      var typing = document.createElement('div');
+      typing.className = 'chat-msg-bot';
+      typing.innerHTML = '<div class="chat-avatar">AF</div><div class="chat-bubble-bot"><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+      msgs.appendChild(typing);
+      scroll();
+      setTimeout(() => {
+        typing.querySelector('.chat-bubble-bot').innerHTML = text;
+        scroll();
+        res();
+      }, delay || 1100);
+    });
+  }
+
+  function addTool(name, result) {
+    return new Promise(res => {
+      setTimeout(() => {
+        var d = document.createElement('div');
+        d.className = 'chat-tool-call';
+        d.innerHTML = '<span style="font-size:11px;margin-right:4px;">🔗</span><span class="chat-tool-name">' + name + '</span><span class="chat-tool-result">&nbsp;→ ' + result + '</span>';
+        msgs.appendChild(d);
+        scroll();
+        res();
+      }, 400);
+    });
+  }
+
+  function setChips(options) {
+    chips.innerHTML = '';
+    if (!options || options.length === 0) { chips.style.display = 'none'; return; }
+    chips.style.display = 'flex';
+    options.forEach(opt => {
+      var b = document.createElement('div');
+      b.className = 'chat-chip';
+      b.textContent = opt;
+      b.onclick = () => handleInput(opt);
+      chips.appendChild(b);
+    });
+  }
+
+  async function greet() {
+    state.locked = true;
+    await addBot('👋 Welcome back, Jordan! I\'m your PIP Agent. I\'ve pulled the latest data for all three of your properties. Here\'s where things stand:', 900);
+    await addTool('get_pip_scores', 'Dayton: 71 · Columbus: 84 · Cincinnati: 78');
+    await addBot('<strong>Your properties at a glance:</strong><br><br>🟡 <strong>Dayton (71)</strong> — Marcus just visited. 14 open items. 3 overdue.<br>🟢 <strong>Columbus (84)</strong> — On track. 2 open items, both in progress.<br>🟠 <strong>Cincinnati (78)</strong> — Slight dip this quarter. Pool area flagged.', 1200);
+    setChips(['What should I fix first?', 'Tell me about Dayton', 'Any programs I should know about?']);
+    state.step = 'overview';
+    state.locked = false;
+  }
+
+  async function handleInput(text) {
+    if (state.locked) return;
+    setChips([]);
+    addUser(text);
+    state.locked = true;
+
+    if (state.step === 'overview' || text.toLowerCase().includes('fix') || text.toLowerCase().includes('first')) {
+      await addTool('get_pip_criteria_weights', 'Exterior: 30% · Guestroom: 25% · Lobby: 20% · Other: 25%');
+      await addTool('cross_reference_pip_standards', 'Dayton open items mapped to scoring weights');
+      await addBot('For the fastest score improvement at Dayton, here\'s the prioritized order:<br><br><strong>1. Exterior signage (overdue)</strong> — worth up to 8 points. Flagged twice, now affecting guest reviews too.<br><strong>2. Lobby furniture refresh</strong> — 5 points. Marcus logged this Feb + March. Connected to a <strong>design upgrade program</strong>.<br><strong>3. Pool area signage</strong> — 4 points. Low effort, high impact on inspection score.<br><br>Fixing just these three gets Dayton from 71 → 88+.', 1400);
+      setChips(['Tell me about the design upgrade program', 'Log action item for signage', 'What about Cincinnati?']);
+      state.step = 'priority';
+      state.locked = false;
+
+    } else if (state.step === 'priority' && text.toLowerCase().includes('program')) {
+      await addTool('get_program_recommendations', 'Design Upgrade Track · Budget Signage Network program');
+      await addBot('Great news — Red Roof Inn has a <strong>Design Upgrade Program</strong> that directly addresses your lobby and exterior items:<br><br>📋 <strong>What it covers:</strong> Brand-approved signage vendors, lobby refresh kits, financing options up to $40K<br>💰 <strong>Estimated savings vs. retail:</strong> 18–22%<br>⏱ <strong>Completion window:</strong> 60–90 days<br><br>Enrolling also flags your property as "actively improving" in the brand system — which matters for your next review.', 1300);
+      setChips(['Sign me up', 'Learn more first', 'Not right now']);
+      state.step = 'program';
+      state.locked = false;
+
+    } else if (state.step === 'program' && (text.toLowerCase().includes('sign') || text.toLowerCase().includes('enroll'))) {
+      await addTool('enroll_franchisee_program', 'Jordan Bailey → Design Upgrade Program');
+      await addTool('salesforce_create_activity', 'Program enrollment logged → Marcus FOD view');
+      await addBot('✅ <strong>Done — you\'re enrolled!</strong><br><br>I\'ve logged this in the system. Marcus can see your enrollment in his Salesforce view — no email needed. A program coordinator will reach out within 48 hours.<br><br>This is a big step, Jordan. Dayton\'s on a better path.', 1000);
+      setChips(['What else can I improve?', 'Check Columbus']);
+      state.step = 'enrolled';
+      state.locked = false;
+
+    } else {
+      await addBot('I can help with that. Use the suggestions below or type any question about your properties, PIP scores, or programs.', 800);
+      setChips(['What should I fix first?', 'Tell me about Dayton', 'Any programs I should know about?']);
+      state.step = 'overview';
+      state.locked = false;
+    }
+  }
+
+  send.onclick = () => {
+    var v = input.value.trim();
+    if (v) { input.value = ''; handleInput(v); }
+  };
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { var v = input.value.trim(); if (v) { input.value = ''; handleInput(v); } }
+  });
+
+  greet();
+}
+</script>
+</body>
+</html>
