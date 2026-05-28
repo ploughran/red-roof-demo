@@ -2303,8 +2303,10 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft')  goTo(current - 1);
 });
 
+// Initialise: activate slide 0 directly — goTo() skips when idx === current
 buildNav();
-goTo(0);
+document.getElementById(SLIDES[0].id).classList.add('active');
+updateNav();
 
 /* ══════════════════════════════════════════
    SCENE 3 — FRANCHISEE PORTAL CHAT (s4)
