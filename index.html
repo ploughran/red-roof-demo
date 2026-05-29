@@ -28,6 +28,19 @@
   --ec-purple:  #5b4fcf;
   --mc-yellow:  #ffb600;
   --dc-teal:    #00aac8;
+  /* Semantic status tokens */
+  --success:    #22c55e;
+  --success-soft:#6ee7b7;
+  --warning:    #f59e0b;
+  --warning-soft:#fcd34d;
+  --danger:     #f87171;
+  --info:       #7dd3fc;
+  --teal:       #5eead4;
+  --sky:        #93c5fd;    /* Agentforce badge blue */
+  /* macOS traffic lights */
+  --mac-red:    #ff5f57;
+  --mac-yellow: #febc2e;
+  --mac-green:  #28c840;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -186,9 +199,9 @@ body {
 }
 .pb-sales  { color: #7dd3fc; border-color: rgba(125,211,252,0.35); background: rgba(125,211,252,0.08); }
 .pb-exp    { color: #c4b5fd; border-color: rgba(196,181,253,0.35); background: rgba(196,181,253,0.08); }
-.pb-mktg   { color: #fcd34d; border-color: rgba(252,211,77,0.35);  background: rgba(252,211,77,0.08); }
-.pb-af     { color: #93c5fd; border-color: rgba(147,197,253,0.35); background: rgba(147,197,253,0.08); }
-.pb-dc     { color: #5eead4; border-color: rgba(94,234,212,0.35);  background: rgba(94,234,212,0.08); }
+.pb-mktg   { color: var(--warning-soft); border-color: rgba(252,211,77,0.35);  background: rgba(252,211,77,0.08); }
+.pb-af     { color: var(--sky);          border-color: rgba(147,197,253,0.35); background: rgba(147,197,253,0.08); }
+.pb-dc     { color: var(--teal);         border-color: rgba(94,234,212,0.35);  background: rgba(94,234,212,0.08); }
 
 .title-scenes {
   display: grid; grid-template-columns: repeat(6,1fr); gap: 10px;
@@ -274,9 +287,9 @@ body {
 }
 .fc-sales { color: #7dd3fc; border-color: rgba(125,211,252,0.4); background: rgba(125,211,252,0.08); }
 .fc-exp   { color: #c4b5fd; border-color: rgba(196,181,253,0.4); background: rgba(196,181,253,0.08); }
-.fc-mktg  { color: #fcd34d; border-color: rgba(252,211,77,0.4);  background: rgba(252,211,77,0.08); }
-.fc-af    { color: #93c5fd; border-color: rgba(147,197,253,0.4); background: rgba(147,197,253,0.08); }
-.fc-dc    { color: #5eead4; border-color: rgba(94,234,212,0.4);  background: rgba(94,234,212,0.08); }
+.fc-mktg  { color: var(--warning-soft); border-color: rgba(252,211,77,0.4);  background: rgba(252,211,77,0.08); }
+.fc-af    { color: var(--sky);          border-color: rgba(147,197,253,0.4); background: rgba(147,197,253,0.08); }
+.fc-dc    { color: var(--teal);         border-color: rgba(94,234,212,0.4);  background: rgba(94,234,212,0.08); }
 .fc-mob   { color: #fb923c; border-color: rgba(251,146,60,0.4);  background: rgba(251,146,60,0.08); }
 
 /* Mock screen area */
@@ -300,9 +313,9 @@ body {
 }
 .mock-dots { display: flex; gap: 5px; }
 .mock-dot  { width: 10px; height: 10px; border-radius: 50%; }
-.mock-dot.r { background: #ff5f57; }
-.mock-dot.y { background: #febc2e; }
-.mock-dot.g { background: #28c840; }
+.mock-dot.r { background: var(--mac-red); }
+.mock-dot.y { background: var(--mac-yellow); }
+.mock-dot.g { background: var(--mac-green); }
 .mock-topbar-title {
   flex: 1; text-align: center;
   font-size: 11px; color: var(--muted); font-weight: 500;
@@ -332,9 +345,9 @@ body {
   font-size: 10px; padding: 2px 8px; border-radius: 10px;
   background: rgba(255,255,255,0.08); color: var(--muted); border: 1px solid var(--border);
 }
-.sf-pill.red   { background: rgba(200,16,46,0.18); color: #f87171; border-color: rgba(200,16,46,0.35); }
-.sf-pill.green { background: rgba(46,204,113,0.15); color: #6ee7b7; border-color: rgba(46,204,113,0.3); }
-.sf-pill.amber { background: rgba(245,166,35,0.15); color: #fcd34d; border-color: rgba(245,166,35,0.3); }
+.sf-pill.red   { background: rgba(200,16,46,0.18); color: var(--danger); border-color: rgba(200,16,46,0.35); }
+.sf-pill.green { background: rgba(46,204,113,0.15); color: var(--success-soft); border-color: rgba(46,204,113,0.3); }
+.sf-pill.amber { background: rgba(245,166,35,0.15); color: var(--warning-soft); border-color: rgba(245,166,35,0.3); }
 
 /* Metric grid */
 .metric-grid {
@@ -344,6 +357,7 @@ body {
 .metric-card {
   background: var(--surf2); border: 1px solid var(--border);
   border-radius: 8px; padding: 10px 12px;
+  display: flex; flex-direction: column; overflow: hidden;
 }
 .metric-label {
   font-size: 9.5px; font-weight: 700; text-transform: uppercase;
@@ -355,9 +369,9 @@ body {
 .metric-sub {
   font-size: 10px; color: var(--muted); margin-top: 2px;
 }
-.metric-up   { color: #6ee7b7; }
-.metric-down { color: #f87171; }
-.metric-warn { color: #fcd34d; }
+.metric-up   { color: var(--success-soft); }
+.metric-down { color: var(--danger); }
+.metric-warn { color: var(--warning-soft); }
 
 /* AI response block */
 .ai-block {
@@ -482,6 +496,7 @@ body {
 .value-card {
   background: var(--surf); border: 1px solid var(--border);
   border-radius: 12px; padding: 16px;
+  display: flex; flex-direction: column; overflow: hidden;
 }
 .value-card-title {
   font-size: 11px; font-weight: 700; text-transform: uppercase;
@@ -560,8 +575,8 @@ body {
 }
 .value-table tr:last-child td { border-bottom: none; }
 .value-table td:first-child { color: var(--text); font-weight: 600; }
-.value-table td.after { color: #6ee7b7; }
-.vt-before { color: #f87171 !important; }
+.value-table td.after { color: var(--success-soft); }
+.vt-before { color: var(--danger) !important; }
 
 /* ══════════════════════════════
    SLIDE 9 — CLOSING / CTA
@@ -575,6 +590,7 @@ body {
 .close-card {
   background: var(--surf); border: 1px solid var(--border);
   border-radius: 14px; padding: 20px;
+  display: flex; flex-direction: column; overflow: hidden;
 }
 .close-card-num {
   font-size: 32px; font-weight: 900; color: var(--red);
@@ -583,7 +599,7 @@ body {
 .close-card-title {
   font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 8px;
 }
-.close-card-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.close-card-body { font-size: 12px; color: var(--muted); line-height: 1.6; flex: 1; }
 
 /* ══════════════════════════════
    TYPING ANIMATION
@@ -646,9 +662,9 @@ body {
 .mobile-field { display: flex; justify-content: space-between; align-items: center; }
 .mobile-field-label { font-size: 9px; color: var(--muted); }
 .mobile-field-val { font-size: 10px; font-weight: 600; color: var(--text); }
-.mobile-field-val.red { color: #f87171; }
-.mobile-field-val.amber { color: #fcd34d; }
-.mobile-field-val.green { color: #6ee7b7; }
+.mobile-field-val.red { color: var(--danger); }
+.mobile-field-val.amber { color: var(--warning-soft); }
+.mobile-field-val.green { color: var(--success-soft); }
 .mobile-voice-pill {
   margin: 8px; background: rgba(200,16,46,0.2); border: 1px solid rgba(200,16,46,0.5);
   border-radius: 20px; padding: 8px 12px;
@@ -676,8 +692,8 @@ body {
   font-size: 8.5px; font-weight: 700;
   padding: 1px 5px; border-radius: 6px; flex-shrink: 0;
 }
-.mobile-ai-badge.overdue { background: rgba(248,113,113,0.2); color: #f87171; border: 1px solid rgba(248,113,113,0.3); }
-.mobile-ai-badge.new     { background: rgba(46,204,113,0.15);  color: #6ee7b7; border: 1px solid rgba(46,204,113,0.3);  }
+.mobile-ai-badge.overdue { background: rgba(248,113,113,0.2); color: var(--danger); border: 1px solid rgba(248,113,113,0.3); }
+.mobile-ai-badge.new     { background: rgba(46,204,113,0.15);  color: var(--success-soft); border: 1px solid rgba(46,204,113,0.3);  }
 
 /* ══════════════════════════════
    DASHBOARD MOCK (scene 4)
@@ -688,6 +704,7 @@ body {
 .dash-card {
   background: var(--surf2); border: 1px solid var(--border);
   border-radius: 8px; padding: 10px 12px;
+  display: flex; flex-direction: column; overflow: hidden;
 }
 .dash-card-label {
   font-size: 9px; font-weight: 700; text-transform: uppercase;
@@ -701,8 +718,8 @@ body {
   flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
 }
 .dash-bar-fill { height: 100%; border-radius: 3px; background: var(--red); transition: width 0.6s ease; }
-.dash-bar-fill.green { background: #22c55e; }
-.dash-bar-fill.amber { background: #f59e0b; }
+.dash-bar-fill.green { background: var(--success); }
+.dash-bar-fill.amber { background: var(--warning); }
 .dash-bar-val { font-size: 10px; font-weight: 700; color: var(--text); width: 28px; text-align: right; }
 
 .kpi-row { display: flex; gap: 8px; }
@@ -900,7 +917,7 @@ body {
   /* ── NAV ─────────────────────────────────────────── */
   .nav-brand   { font-size: 12px; }
   .nav-label   { display: none; }
-  .nav-dot     { width: 6px; height: 6px; }
+  .nav-dots    { display: none; }   /* hide dots on mobile — counter is enough */
   .nav-counter { font-size: 11px; }
   .nav-hint    { display: none; }
 
@@ -974,7 +991,7 @@ body {
 
   /* ── SCENE HEADER ────────────────────────────────── */
   .scene-header   { gap: 8px; }
-  .scene-title    { font-size: 16px; }
+  .scene-title    { font-size: clamp(14px, 2.2vw, 16px); }
   .scene-persona-row { flex-wrap: wrap; gap: 6px; }
 }
 </style>
@@ -1897,7 +1914,7 @@ body {
                 <div class="kpi-label">Avg Open Action Items</div>
               </div>
               <div class="kpi-item">
-                <div class="kpi-val" style="color:#f87171;">23d</div>
+                <div class="kpi-val" style="color:var(--danger);">23d</div>
                 <div class="kpi-label">Avg Action Item Age</div>
               </div>
             </div>
@@ -1918,12 +1935,12 @@ body {
                 <div class="dash-bar-row">
                   <div class="dash-bar-label">Derek R.</div>
                   <div class="dash-bar-track"><div class="dash-bar-fill amber" style="width:61%;"></div></div>
-                  <div class="dash-bar-val" style="color:#f59e0b;">61%</div>
+                  <div class="dash-bar-val" style="color:var(--warning);">61%</div>
                 </div>
                 <div class="dash-bar-row">
                   <div class="dash-bar-label">Lisa T.</div>
                   <div class="dash-bar-track"><div class="dash-bar-fill" style="width:44%;"></div></div>
-                  <div class="dash-bar-val" style="color:#f87171;">44%</div>
+                  <div class="dash-bar-val" style="color:var(--danger);">44%</div>
                 </div>
               </div>
 
@@ -1947,7 +1964,7 @@ body {
                 <div class="dash-bar-row">
                   <div class="dash-bar-label">Below 60</div>
                   <div class="dash-bar-track"><div class="dash-bar-fill" style="width:10%;"></div></div>
-                  <div class="dash-bar-val" style="color:#f87171;">10%</div>
+                  <div class="dash-bar-val" style="color:var(--danger);">10%</div>
                 </div>
               </div>
             </div>
